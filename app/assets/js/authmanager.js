@@ -32,13 +32,9 @@ const log = LoggerUtil.getLogger('AuthManager')
 exports.addMojangAccount = async function(username, password) {
     try {
         const response = await authenticator.auth(username, password)
-        console.log(response)
         const session = response
         if (session.uuid != null) {
-            const ret = ConfigManager.addMojangAuthAccount(session.uuid, session.access_token, session.username, session.username)
-            if (ConfigManager.getClientToken() == null) {
-                ConfigManager.setClientToken(session.uuid)
-            }
+            const ret = ConfigManager.addMojangAuthAccount(session.uuid, session.accessToken, session.username, session.username)
             ConfigManager.save()
             return ret
         } else {
@@ -75,13 +71,11 @@ function calculateExpiryDate(nowMs, epiresInS) {
  */
 exports.removeMojangAccount = async function(uuid){
     try {
-        const authAcc = ConfigManager.getAuthAccount(uuid)
-        console.log(ConfigManager.getaccessToken(uuid))
-        const response = await authenticator.logout(ConfigManager.getaccessToken(uuid))
-        if (true) {
+        
+        if (authenticator.logout(ConfigManager.getaccessToken(uuid))) {
             ConfigManager.removeAuthAccount(uuid)
             ConfigManager.save()
-            console.log("test sa marche la deco")
+            console.log("vous ete déconnecter")
             return Promise.resolve()
         } else {
             log.error('Error while removing account', response.error)
@@ -132,12 +126,6 @@ async function validateSelectedMojangAccount(){
  * otherwise false.
  */
 exports.validateSelected = async function(){
-    const current = ConfigManager.getSelectedAccount()
-
-    if(current.type === 'microsoft') {
-        return await validateSelectedMicrosoftAccount()
-    } else {
-        return await validateSelectedMojangAccount()
-    }
+    return await validateSelectedMojangAccount()
     
 }

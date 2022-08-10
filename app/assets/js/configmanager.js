@@ -6,7 +6,7 @@ const logger = require('./loggerutil')('%c[ConfigManager]', 'color: #a02d2a; fon
 
 const sysRoot = process.env.APPDATA || (process.platform == 'darwin' ? process.env.HOME + '/Library/Application Support' : process.env.HOME)
 // TODO change
-const dataPath = path.join(sysRoot, '.helioslauncher')
+const dataPath = path.join(sysRoot, '.nationwarslauncher')
 
 // Forked processes do not have access to electron, so we have this workaround.
 const launcherDir = process.env.CONFIG_DIRECT_PATH || require('@electron/remote').app.getPath('userData')
@@ -318,7 +318,7 @@ exports.getAuthAccount = function(uuid){
 }
 
 exports.getaccessToken = function (uuid) {
-    return config.accessToken
+    return config.authenticationDatabase[uuid].accessToken
 }
 
 /**
@@ -346,7 +346,7 @@ exports.updateMojangAuthAccount = function(uuid, accessToken){
  * @returns {Object} The authenticated account object created by this action.
  */
 exports.addMojangAuthAccount = function(uuid, accessToken, username, displayName){
-    config.selectedAccount = uuid
+    config.selectedAccount = uuid;
     config.authenticationDatabase[uuid] = {
         type: 'mojang',
         accessToken: accessToken,
